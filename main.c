@@ -8,6 +8,8 @@
  * USAGE:
  *     cc -o cookie-converter main.c
  *     ./cookie-converter input.txt
+ *     or
+ *     cat input.txt | ./cookie-converter
  */
 
 #define MAX_FILE_SIZE 4096
@@ -77,17 +79,21 @@ int main(int argc, char **argv)
     FILE *fptr;
     char buf[MAX_FILE_SIZE] = {0};
 
-    if (argc<2) usage();
-
-    fptr = fopen(argv[1], "r");
-    if (fptr == NULL) {
-        die("The file could not be opened.");
+    if (argc>1) {
+        fptr = fopen(argv[1], "r");
+        if (fptr == NULL) {
+            die("The file could not be opened.");
+        }
+    } else {
+        fptr = stdin;
     }
+
     printf("# Netscape HTTP Cookie File\n");
     while(fgets(buf, MAX_FILE_SIZE, fptr)) {
         parse(buf);
     }
 
-    fclose(fptr);
+    if (fptr != stdin)
+        fclose(fptr);
     return 0;
 }
